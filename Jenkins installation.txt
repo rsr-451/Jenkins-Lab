@@ -1,0 +1,56 @@
+----------------- Jenkins installation steps----------------------------------
+https://www.jenkins.io/doc/book/installing/linux/#red-hat-centos
+
+69  sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+   70  sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+   71  sudo dnf upgrade
+   72  sudo dnf install fontconfig java-17-openjdk
+   73  sudo dnf install jenkins
+   74  sudo systemctl daemon-reload
+   75  systemctl status jenkins
+   76  sudo systemctl enable jenkins
+   77  sudo systemctl start jenkins
+   78  systemctl status jenkins
+   79  cat var/lib/jenkins/secrets/initialAdminPassword
+
+--------------- firewall configuration-------------------------
+
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-port=8080/tcp
+firewall-cmd --reload
+
+------------------- plugin to add for remote ssh commands ------------------------
+Publish Over SSH
+https://plugins.jenkins.io/publish-over-ssh/#:~:text=From%20the%20Jenkins%20home%20page,later%20available%20in%20your%20builds.
+
+Global Configuration
+From the Jenkins home page, click "Manage Jenkins" and then click on "Configure System" and find the SSH section. It allows you to configure hosts that are later available in your builds.
+
+
+
+                sh '''sudo openssl req -new -newkey rsa:2048 -nodes -out /home/raja/Documents/jenkins_com.csr -keyout /home/raja/Documents/jenkins_com.key -subj "/C=IN/ST=/L=/O=/CN=jenkins.com"'''
+
+
+
+------------ to enable file writing permissions to jenkins --------------
+login to the rhel server 
+nano /etc/sudousers
+Add below line to the end of the sudousers file
+
+Jenkins ALL=(ALL) NOPASSWD:ALL
+
+
+
+------------------------- openssl view csr content --------------------------
+openssl req -in sample.csr -noout -text
+
+stage('CSR Check') {
+            steps {
+                sh '''sudo openssl req -in /home/raja/Documents/jenkins_com.csr -noout -text'''
+            }   
+        }
+
+-------------------- Github integration-----------------
+Failed To Connect To Repository Error Performing Git Command Git Ls-Remote -Https Github Com Jenikis Hook Git HEAD.
+to resolve this error install git in the host where jenkins is running
+# sudo yum install git
